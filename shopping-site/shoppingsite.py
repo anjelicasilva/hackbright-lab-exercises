@@ -49,6 +49,7 @@ def show_melon(melon_id):
     """
 
     melon = melons.get_by_id(melon_id)
+    print(melon)
     return render_template("melon_details.html",
                            display_melon=melon)
 
@@ -75,10 +76,18 @@ def show_shopping_cart():
     # Make sure your function can also handle the case wherein no cart has
     # been added to the session
 
+    melon_list = []
+    total_cost = 0
 
-    
+    for melon in session['cart']:
+        melon_obj = melons.get_by_id(melon)
+        if melon_obj not in melon_list:
+            (melon_list).append(melon_obj)
+        melon_obj.quantity = session['cart'][melon]
+        melon_obj.total_melon_cost = melon_obj.price * melon_obj.quantity
+        total_cost = total_cost + melon_obj.total_melon_cost
 
-    return render_template("cart.html")
+    return render_template("cart.html", melon_list = melon_list, total_cost = total_cost)
 
 
 @app.route("/add_to_cart/<melon_id>")
